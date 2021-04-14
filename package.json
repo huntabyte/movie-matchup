@@ -1,0 +1,19 @@
+{
+	"name": "big-screen-battle-build",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "parcel src/index.html",
+		"build": "parcel build src/index.html"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@popperjs/core": "^2.9.2",
+		"bootstrap": "^5.0.0-beta3",
+		"parcel-bundler": "^1.12.5",
+		"sass": "^1.32.8"
+	}
+}

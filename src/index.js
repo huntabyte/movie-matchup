@@ -202,7 +202,7 @@ const movieTemplate = movieDetail => {
       <p class="subtitle">IMDB Rating</p>
     </div>
 
-    <div data-value=${imdbVotes} class="alert alert-success">
+    <div data-value=${imdbVotes} class="alert alert-success mb-5">
       <p class="title mb-1">${movieDetail.imdbVotes}</p>
       <p class="subtitle">IMDB Votes</p>
     </div>

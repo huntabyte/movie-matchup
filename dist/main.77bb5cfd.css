@@ -10782,10 +10782,7 @@ textarea.form-control-lg {
 }
 
 .form-control::placeholder {
-  background: #000;
-  border: #a0000b 2px solid;
   color: #d3d3d3;
-  box-shadow: none;
 }
 
 .left-side {

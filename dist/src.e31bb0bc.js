@@ -8039,7 +8039,7 @@ const createAutoComplete = (_ref) => {
     inputValue,
     fetchData
   } = _ref;
-  root.innerHTML = "\n    <label class=\"form-label mb-0\"><b>Search</b></label>\n    <input class=\"form-control\" \"placeholder:\"Search for a movie\" />\n    <div class=\"dropdown\">\n      <div class=\"dropdown-menu\">\n        <div class=\"dropdown-content results\"</div>\n      </div>\n    </div>\n";
+  root.innerHTML = "\n    <label class=\"form-label mb-0\"><b>Search</b></label>\n    <input class=\"form-control\" placeholder=\"Search for a movie\" />\n    <div class=\"dropdown\">\n      <div class=\"dropdown-menu\">\n        <div class=\"dropdown-content results\"</div>\n      </div>\n    </div>\n";
   const input = root.querySelector('input');
   const dropdown = root.querySelector('.dropdown-menu');
   const resultsWrapper = root.querySelector('.results');

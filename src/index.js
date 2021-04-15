@@ -4,7 +4,7 @@ import * as bootstrap from 'bootstrap';
 const createAutoComplete = ({ root, renderOption, onOptionSelect, inputValue, fetchData }) => {
 	root.innerHTML = `
     <label class="form-label mb-0"><b>Search</b></label>
-    <input class="form-control" />
+    <input class="form-control" "placeholder:"Search for a movie" />
     <div class="dropdown">
       <div class="dropdown-menu">
         <div class="dropdown-content results"</div>

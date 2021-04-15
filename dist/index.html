@@ -5,11 +5,39 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Document</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
 		<link rel="stylesheet" href="/main.77bb5cfd.css">
 	<script src="/main.77bb5cfd.js"></script></head>
 	<body>
-		<h1>Hello World</h1>
-
+		<div>
+			<section class="container p-5">
+				<div id="hero-body">
+					<div class="d-flex flex-column justify-content-center align-items-center mt-5 pt-5 mb-3">
+						<h1 class="mb-5">MOVIE MATCHUP</h1>
+						<p class="lead">How it works</p>
+						<p>
+							Search a movie on each side to compare some key stats and highlight the winner of the competition. You can
+							run as many searches as you wish.
+						</p>
+					</div>
+				</div>
+				<!-- <div id="searchArea" class="d-flex justify-content-center align-items-center mt-5 pt-5"></div> -->
+			</section>
+			<div class="container p-0">
+				<div class="d-flex flex-row justify-content-start">
+					<div class="left-side pe-5">
+						<div id="left-autocomplete"></div>
+						<div id="left-summary"></div>
+					</div>
+					<div class="right-side ps-5">
+						<div id="right-autocomplete"></div>
+						<div id="right-summary"></div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<script src="/src.e31bb0bc.js"></script>
 	</body>
 </html>

@@ -1,5 +1,123 @@
-@import '../../node_modules/bootstrap/scss/bootstrap';
+$primary: #a0000b;
+$alert-bg-scale: 0%;
+
+html {
+	height: 100%;
+}
 
 body {
-	background: $primary;
+	background-image: linear-gradient(180deg, #000000 50%, rgba(0, 0, 0, 0) 100%), url('../img/background-image.png') !important;
+	background-size: cover;
+	height: 100%;
+	margin: 0;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
+@import '../../node_modules/bootstrap/scss/bootstrap';
+
+#hero-body {
+	height: 30%;
+	h1 {
+		font-family: 'Oswald', sans-serif;
+		font-size: 7rem;
+		color: #fff;
+		text-align: center;
+	}
+	p.lead {
+		font-family: 'Roboto', sans-serif;
+		font-size: 2rem;
+		color: $primary;
+		text-align: center;
+	}
+	p {
+		color: #f4f4f4;
+		width: 50%;
+		text-align: center;
+		font-size: 1.2rem;
+	}
+}
+
+.form-label {
+	font-family: 'Roboto', sans-serif;
+	color: #fff;
+}
+
+.form-control {
+	background-color: #000;
+	border-radius: 10px;
+	color: #fff;
+}
+
+.form-control:focus {
+	background: #000;
+	border: $primary 2px solid;
+	color: #fff;
+	box-shadow: none;
+}
+
+.left-side {
+	width: 50%;
+}
+
+.right-side {
+	width: 50%;
+}
+.results {
+	max-height: 500px;
+	overflow-y: scroll;
+}
+
+.dropdown-menu {
+	background-color: rgba(43, 43, 43, 0.95);
+	border-radius: 5px;
+	width: 100%;
+}
+.dropdown-item {
+	background-color: rgba(43, 43, 43, 0.95);
+	color: #fff;
+	display: flex;
+	align-items: center;
+	height: 60px;
+	cursor: pointer;
+}
+
+.dropdown-item:hover {
+	display: flex;
+	align-items: center;
+	height: 60px;
+	cursor: pointer;
+}
+
+.dropdown-item img {
+	height: 50px;
+	margin-right: 10px;
+}
+
+.alert {
+	padding: 1.2rem;
+}
+
+.card-image {
+	width: 128px;
+}
+
+.movie-title,
+.movie-cat {
+	color: #fff;
+}
+
+.movie-plot {
+	color: #d5d5d5;
+}
+
+.title {
+	font-size: 1.6rem;
+	color: #fff;
+	font-style: strong;
+}
+
+.subtitle {
+	font-size: 1.1rem;
+	color: #f4f4f4;
 }

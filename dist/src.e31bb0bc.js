@@ -8017,13 +8017,192 @@ class Toast extends BaseComponent {
 exports.Toast = Toast;
 defineJQueryPlugin(NAME, Toast);
 },{"@popperjs/core":"../node_modules/@popperjs/core/lib/index.js"}],"index.js":[function(require,module,exports) {
-"use strict";
+'use strict';
 
 var bootstrap = _interopRequireWildcard(require("bootstrap"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+const createAutoComplete = (_ref) => {
+  let {
+    root,
+    renderOption,
+    onOptionSelect,
+    inputValue,
+    fetchData
+  } = _ref;
+  root.innerHTML = "\n    <label class=\"form-label mb-0\"><b>Search</b></label>\n    <input class=\"form-control\" />\n    <div class=\"dropdown\">\n      <div class=\"dropdown-menu\">\n        <div class=\"dropdown-content results\"</div>\n      </div>\n    </div>\n";
+  const input = root.querySelector('input');
+  const dropdown = root.querySelector('.dropdown-menu');
+  const resultsWrapper = root.querySelector('.results');
+
+  const onInput = async event => {
+    const items = await fetchData(event.target.value);
+
+    if (!items.length) {
+      dropdown.classList.remove('show');
+      return;
+    }
+
+    resultsWrapper.innerHTML = '';
+    dropdown.classList.add('show');
+
+    for (let item of items) {
+      const option = document.createElement('a');
+      option.classList.add('dropdown-item');
+      option.innerHTML = renderOption(item);
+      option.addEventListener('click', () => {
+        dropdown.classList.remove('show');
+        input.value = inputValue(item);
+        onOptionSelect(item);
+      });
+      resultsWrapper.appendChild(option);
+    }
+  };
+
+  input.addEventListener('input', debounce(onInput, 750));
+  document.addEventListener('click', event => {
+    if (!root.contains(event.target)) {
+      dropdown.classList.remove('show');
+    }
+  });
+};
+
+const debounce = function debounce(func) {
+  let delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1000;
+  let timeoutId;
+  return function () {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(() => {
+      func.apply(null, args);
+    }, delay);
+  };
+};
+
+const autoCompleteConfig = {
+  renderOption(movie) {
+    const imgSrc = movie.Poster === 'N/A' ? '' : movie.Poster;
+    return "\n      <img src=\"".concat(imgSrc, "\" />\n      ").concat(movie.Title, " (").concat(movie.Year, ")\n    ");
+  },
+
+  inputValue(movie) {
+    return movie.Title;
+  },
+
+  async fetchData(searchTerm) {
+    const response = await axios.get('http://www.omdbapi.com/', {
+      params: {
+        apikey: '87b954c',
+        s: searchTerm
+      }
+    });
+
+    if (response.data.Error) {
+      return [];
+    }
+
+    return response.data.Search;
+  }
+
+};
+createAutoComplete(_objectSpread(_objectSpread({}, autoCompleteConfig), {}, {
+  root: document.querySelector('#left-autocomplete'),
+
+  onOptionSelect(movie) {
+    onMovieSelect(movie, document.querySelector('#left-summary'), 'left');
+  }
+
+}));
+createAutoComplete(_objectSpread(_objectSpread({}, autoCompleteConfig), {}, {
+  root: document.querySelector('#right-autocomplete'),
+
+  onOptionSelect(movie) {
+    onMovieSelect(movie, document.querySelector('#right-summary'), 'right');
+  }
+
+}));
+let leftMovie;
+let rightMovie;
+
+const onMovieSelect = async (movie, summaryElement, side) => {
+  const response = await axios.get('http://www.omdbapi.com/', {
+    params: {
+      apikey: '87b954c',
+      i: movie.imdbID
+    }
+  });
+  summaryElement.innerHTML = movieTemplate(response.data);
+
+  if (side === 'left') {
+    leftMovie = response.data;
+  } else {
+    rightMovie = response.data;
+  }
+
+  if (leftMovie && rightMovie) {
+    runComparison();
+    document.getElementById('left-summary').addEventListener('DOMSubtreeModified', runComparison());
+    document.getElementById('right-summary').addEventListener('DOMSubtreeModified', runComparison());
+  }
+};
+
+const runComparison = () => {
+  const leftSideStats = document.querySelectorAll('#left-summary .alert');
+  const rightSideStats = document.querySelectorAll('#right-summary .alert');
+  leftSideStats.forEach((leftStat, index) => {
+    const rightStat = rightSideStats[index];
+    const leftSideValue = parseInt(leftStat.dataset.value);
+    const rightSideValue = parseInt(rightStat.dataset.value);
+
+    if (rightSideValue > leftSideValue) {
+      leftStat.classList.remove('alert-success');
+      leftStat.classList.remove('alert-danger');
+      leftStat.classList.add('alert-danger');
+      rightStat.classList.remove('alert-danger');
+      rightStat.classList.add('alert-success');
+    } else {
+      rightStat.classList.remove('alert-success');
+      rightStat.classList.remove('alert-danger');
+      rightStat.classList.add('alert-danger');
+      leftStat.classList.remove('alert-danger');
+      leftStat.classList.add('alert-success');
+    }
+  });
+};
+
+const movieTemplate = movieDetail => {
+  const dollars = parseInt(movieDetail.BoxOffice.replace(/\$/g, '').replace(/,/g, ''));
+  const metascore = parseInt(movieDetail.Metascore);
+  const imdbRating = parseFloat(movieDetail.imdbRating) * 10;
+  console.log(imdbRating);
+  const imdbVotes = parseInt(movieDetail.imdbVotes.replace(/,/g, ''));
+  const awards = movieDetail.Awards.split(' ').reduce((prev, word) => {
+    const value = parseInt(word);
+
+    if (isNaN(value)) {
+      return prev;
+    } else {
+      return prev + value;
+    }
+  }, 0);
+  const imgSrc = movieDetail.Poster === 'N/A' ? '' : movieDetail.Poster;
+  return "\n    <div class=\"container py-3 mt-2\">\n      <div class=\"row g-0 mb-2\">\n        <div class=\"col-md-3\">\n          <img src=\"".concat(imgSrc, "\" class=\"card-image\" />\n        </div>\n        <div class=\"col-md-9\">\n          <h1 class=\"movie-title\">").concat(movieDetail.Title, "</h1>\n          <h5 class=\"movie-cat\">").concat(movieDetail.Genre, "</h5>\n          <p class=\"movie-plot\">").concat(movieDetail.Plot, "</p>\n        </div>\n      </div>\n    </div>\n    <div data-value=").concat(awards, " class=\"alert alert-success mt-2\">\n      <p class=\"title mb-1\">").concat(movieDetail.Awards, "</p>\n      <p class=\"subtitle\">Awards</p>\n    </div>\n\n    <div data-value=").concat(dollars, " class=\"alert alert-success\">\n      <p class=\"title mb-1\">").concat(movieDetail.BoxOffice, "</p>\n      <p class=\"subtitle\">Box Office</p>\n    </div>\n\n    <div data-value=").concat(metascore, " class=\"alert alert-success\">\n      <p class=\"title mb-1\">").concat(movieDetail.Metascore, "</p>\n      <p class=\"subtitle\">Metascore</p>\n    </div>\n\n    <div data-value=").concat(imdbRating, " class=\"alert alert-success\">\n      <p class=\"title mb-1\">").concat(movieDetail.imdbRating, "</p>\n      <p class=\"subtitle\">IMDB Rating</p>\n    </div>\n\n    <div data-value=").concat(imdbVotes, " class=\"alert alert-success\">\n      <p class=\"title mb-1\">").concat(movieDetail.imdbVotes, "</p>\n      <p class=\"subtitle\">IMDB Votes</p>\n    </div>\n  ");
+};
 },{"bootstrap":"../node_modules/bootstrap/dist/js/bootstrap.esm.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -8052,7 +8231,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49336" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49426" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

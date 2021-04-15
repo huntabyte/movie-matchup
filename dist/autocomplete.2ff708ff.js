@@ -117,79 +117,62 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
-var bundleURL = null;
+})({"autocomplete.js":[function(require,module,exports) {
+'use strict';
 
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
-  return bundleURL;
-}
+const createAutoComplete = (_ref) => {
+  let {
+    root,
+    renderOption,
+    onOptionSelect,
+    inputValue,
+    fetchData
+  } = _ref;
+  root.innerHTML = "\n    <label><b>Search</b></label>\n    <input class=\"input\" />\n    <div class=\"dropdown\">\n      <div class=\"dropdown-menu\">\n        <div class=\"dropdown-content results\"</div>\n      </div>\n    </div>\n";
+  const input = root.querySelector('input');
+  const dropdown = root.querySelector('.dropdown');
+  const resultsWrapper = root.querySelector('.results');
 
-function getBundleURL() {
-  // Attempt to find the URL of the current script and use that as the base URL
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+  const onInput = async event => {
+    const items = await fetchData(event.target.value);
 
-    if (matches) {
-      return getBaseURL(matches[0]);
+    if (!items.length) {
+      dropdown.classList.remove('is-active');
+      return;
     }
-  }
 
-  return '/';
-}
+    resultsWrapper.innerHTML = '';
+    dropdown.classList.add('is-active');
 
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)?\/[^/]+(?:\?.*)?$/, '$1') + '/';
-}
-
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-},{}],"../node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
-var bundle = require('./bundle-url');
-
-function updateLink(link) {
-  var newLink = link.cloneNode();
-
-  newLink.onload = function () {
-    link.remove();
+    for (let item of items) {
+      const option = document.createElement('a');
+      option.classList.add('dropdown-item');
+      option.innerHTML = renderOption(item);
+      option.addEventListener('click', () => {
+        dropdown.classList.remove('is-active');
+        input.value = inputValue(item);
+        onOptionSelect(item);
+      });
+      resultsWrapper.appendChild(option);
+    }
   };
 
-  newLink.href = link.href.split('?')[0] + '?' + Date.now();
-  link.parentNode.insertBefore(newLink, link.nextSibling);
-}
-
-var cssTimeout = null;
-
-function reloadCSS() {
-  if (cssTimeout) {
-    return;
-  }
-
-  cssTimeout = setTimeout(function () {
-    var links = document.querySelectorAll('link[rel="stylesheet"]');
-
-    for (var i = 0; i < links.length; i++) {
-      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
-        updateLink(links[i]);
-      }
+  input.addEventListener('input', debounce(onInput, 750));
+  document.addEventListener('click', event => {
+    if (!root.contains(event.target)) {
+      dropdown.classList.remove('is-active');
     }
+  });
+};
 
-    cssTimeout = null;
-  }, 50);
-}
-
-module.exports = reloadCSS;
-},{"./bundle-url":"../node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"scss/main.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"./..\\img\\background-image.png":[["background-image.80f29eec.png","img/background-image.png"],"img/background-image.png"],"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var _default = createAutoComplete;
+exports.default = _default;
+},{}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -217,7 +200,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49426" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63056" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -393,5 +376,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../node_modules/parcel-bundler/src/builtins/hmr-runtime.js"], null)
-//# sourceMappingURL=/main.77bb5cfd.js.map
+},{}]},{},["../node_modules/parcel-bundler/src/builtins/hmr-runtime.js","autocomplete.js"], null)
+//# sourceMappingURL=/autocomplete.2ff708ff.js.map
